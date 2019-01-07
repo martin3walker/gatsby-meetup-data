@@ -1,0 +1,20 @@
+.sectionContainer {
+  padding-top: 25px;
+}
+.chartContainer {
+  max-width: 1400px;
+  margin: auto;
+  padding: 0px 15px 100px;
+}
+.headerContainer {
+  margin-bottom: 50px;
+  font-family: 'Helvetica';
+  color: #000;
+}
+.headerContainer p:first-child {
+  font-size: 32px;
+  font-weight: bold;
+}
+.headerContainer p {
+  text-align: center;
+}

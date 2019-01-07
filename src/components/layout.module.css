@@ -1,0 +1,28 @@
+html{
+  font-family: 'Helvetica';
+  color: #000;
+}
+body{
+  margin: 0px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 6fr;
+}
+.menuColumn {
+  background: #fafafa;
+}
+.menuContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 50px 0px 0px 10px;
+}
+.menuItem {
+  text-decoration: none;
+  color: #000;
+  font-weight: 400;
+}
+.menuActive {
+  color: #008cff;
+}
