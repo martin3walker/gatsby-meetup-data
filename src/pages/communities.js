@@ -57,7 +57,8 @@ const OverviewCharts = ({ data }) => {
         xAxes: [{
           labelString: 'Communities'
         }]
-      }
+      },
+      maintainAspectRatio: false
     }
   };
 
@@ -76,8 +77,6 @@ const OverviewCharts = ({ data }) => {
           />
           <Bar
             data = {communityOverviewChart}
-            width = {100}
-            height = {50}
             legend = {communityOverviewChart.options.legend}
           />
         </div>

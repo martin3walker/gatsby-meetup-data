@@ -2,9 +2,12 @@
   padding-top: 25px;
 }
 .chartContainer {
-  max-width: 1400px;
+  width: 65vw;
+  height: 60vh;
   margin: auto;
-  padding: 0px 15px 100px;
+  padding: 0px 15px;
+  margin-bottom: 250px;
+  position: relative;
 }
 .headerContainer {
   margin-bottom: 50px;

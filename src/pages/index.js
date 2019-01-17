@@ -47,12 +47,20 @@ const IndexPage = ({data}) => {
           padding: 20,
         }
       },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      },
       hover: {
         onHover: (event, element) => {
           event.target.style.cursor = element[0] ? 'pointer' : 'default'
           console.log(element)
         }
-      }
+      },
+      maintainAspectRatio: false
     }
   };
 
@@ -71,8 +79,6 @@ const IndexPage = ({data}) => {
           />
           <Bar
             data = {upcomingEventsChart}
-            width = {100}
-            height = {50}
             options = {upcomingEventsChart.options}
             getElementAtEvent = {
               elem => {

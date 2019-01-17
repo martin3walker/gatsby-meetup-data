@@ -60,7 +60,9 @@ const CommunityCharts = ({ data }) => {
                     event.target.style.cursor = element[0] ? 'pointer' : 'default'
                     console.log(element)
                   }
-                }
+                },
+                maintainAspectRatio:false,
+                responsive: true
               },
               city: edge.node.city,
             }
@@ -78,8 +80,6 @@ const CommunityCharts = ({ data }) => {
                 />
                 <Bar
                   data={community.data}
-                  width={100}
-                  height={50}
                   options={community.options}
                   getElementAtEvent={elem => {
                     let targetData = data.allCommunityData.edges.find(edge => {
