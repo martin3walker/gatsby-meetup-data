@@ -74,19 +74,37 @@ exports.sourceNodes = async ({
   }
 
   //Get meetup members data stored in meetup pro
+  const getUsableNextLink = ({ link }) => {
+    let usableLink
+    let rel
+    let test = link.split(',')
+    if (test.length > 1) {
+      usableLink = test[1]
+        .split('<')[1]
+        .split('>')[0]
+        .toString()
+      rel = test[1].split('rel=')[1].split('"')[1]
+    } else {
+      usableLink = link
+        .split('<')[1]
+        .split('>')[0]
+        .toString()
+      rel = link.split('rel=')[1].split('"')[1]
+    }
+
+    return [usableLink, rel]
+  }
+
   const getMeetupMembers = async ({ url, currentList = [] }) => {
     const result = await axios.get(url)
     const link = result.headers.link
-      .split('<')[1]
-      .split('>')[0]
-      .toString()
+    const linkInformation = getUsableNextLink({ link: link })
     const key = '223151318612e4556a60227a3c125d'
-    const rel = result.headers.link.split('rel=')[1].split('"')[1]
     const members = [...currentList, ...result.data]
 
-    if (rel != 'prev') {
+    if (linkInformation[1] != 'prev') {
       return await getMeetupMembers({
-        url: `${link}&key=${key}`,
+        url: `${linkInformation[0]}&key=${key}`,
         currentList: members,
       })
     }
@@ -101,7 +119,6 @@ exports.sourceNodes = async ({
       meetupEvents,
       meetupGroups,
       meetupMembers
-
     ;[
       youtubeVideos,
       contentfulEvents,
