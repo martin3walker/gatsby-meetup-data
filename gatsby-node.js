@@ -20,6 +20,13 @@ exports.sourceNodes = async ({
       'fields.type': eventType,
     })
 
+    events.items.forEach(
+      event =>
+        !event.fields.meetupUrl &&
+        console.log(`
+          Missing meetup URL in contentful for ${event.fields.name}`)
+    )
+
     return events
   }
 
@@ -141,6 +148,10 @@ exports.sourceNodes = async ({
         name: event.fields.name,
         city: event.fields.locationCity.split(',')[0],
         url: event.fields.meetupUrl,
+        host: event.fields.location,
+        date: event.fields.startTime,
+        updated: event.sys.updatedAt,
+        planningNotes: event.fields.planningNotes,
         associatedVideos: event.fields.videoUrls
           ? event.fields.videoUrls.map(videoUrl => {
               return youtubeVideos.find(video => {
@@ -156,7 +167,9 @@ exports.sourceNodes = async ({
       }
     })
 
-    const data = meetupGroups.data.map(dataSet => {
+    // fullEventData.forEach(event => console.log(event.eventDetails.time))
+
+    const communityData = meetupGroups.data.map(dataSet => {
       let events = fullEventData.filter(meetup => {
         let city = meetup.city
         city === 'Brooklyn' ? (city = 'New York') : (city = city)
@@ -181,7 +194,8 @@ exports.sourceNodes = async ({
         }),
       }
     })
-    return data
+
+    return communityData
   }
 
   const communityData = await combineData()
