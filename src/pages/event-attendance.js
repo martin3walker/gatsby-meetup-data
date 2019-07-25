@@ -11,8 +11,8 @@ import chartStyles from '../components/charts.module.css'
 const CommunityCharts = ({ data }) => {
   return (
     <Layout>
-      <Header/>
-      <section className = {chartStyles.sectionContainer}>
+      <Header />
+      <section className={chartStyles.sectionContainer}>
         {data.allCommunityData.edges
           .map((edge, index) => {
             return {
@@ -57,12 +57,14 @@ const CommunityCharts = ({ data }) => {
                 },
                 hover: {
                   onHover: (event, element) => {
-                    event.target.style.cursor = element[0] ? 'pointer' : 'default'
+                    event.target.style.cursor = element[0]
+                      ? 'pointer'
+                      : 'default'
                     console.log(element)
-                  }
+                  },
                 },
-                maintainAspectRatio:false,
-                responsive: true
+                maintainAspectRatio: false,
+                responsive: true,
               },
               city: edge.node.city,
             }
@@ -70,13 +72,11 @@ const CommunityCharts = ({ data }) => {
           .map(community => {
             return (
               <div className={chartStyles.chartContainer}>
-                <ChartHeader data =
-                  {
-                    [
-                      community.city,
-                      '(Click an event\'s bar to open its meetup page in a new tab)'
-                    ]
-                  }
+                <ChartHeader
+                  data={[
+                    community.city,
+                    "(Click an event's bar to open its meetup page in a new tab)",
+                  ]}
                 />
                 <Bar
                   data={community.data}

@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 exports.sourceNodes = async ({
   actions,
   createNodeId,
@@ -8,9 +10,8 @@ exports.sourceNodes = async ({
   const axios = require('axios')
   const contentful = require('contentful')
   const client = contentful.createClient({
-    space: 'fo9twyrwpveg',
-    accessToken:
-      '353a78b3e8194b600f196ce5792e0f086a91e236fe9ff04e8097b26a9064330f',
+    space: `${process.env.CTF_SPACE_ID}`,
+    accessToken: `${process.env.CTF_ACCESS_TOKEN}`,
   })
 
   //Get meetups stored in Contentful
@@ -32,9 +33,9 @@ exports.sourceNodes = async ({
 
   //Get videos stored in youtube
   const getPlaylist = async (playlistId, nextPage, videos = []) => {
-    let url = `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=AIzaSyBQ6ra4mODnP97LHnOgfn6VJSSI74qf5RQ&maxResults=5&part=snippet${
-      nextPage ? `&pageToken=${nextPage}` : ''
-    }`
+    let url = `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${
+      process.env.YOUTUBE_KEY
+    }&maxResults=5&part=snippet${nextPage ? `&pageToken=${nextPage}` : ''}`
 
     const result = await axios.get(url)
     const { items, nextPageToken } = result.data
@@ -53,16 +54,37 @@ exports.sourceNodes = async ({
       []
     )
     let ids = videos.map(video => video.snippet.resourceId.videoId)
-    let url = `https://www.googleapis.com/youtube/v3/videos?id=${ids}&key=AIzaSyBQ6ra4mODnP97LHnOgfn6VJSSI74qf5RQ&maxResults=5&part=snippet,contentDetails,statistics`
-    const result = await axios.get(url)
 
-    return result.data.items
+    const fetchVideos = async (ids, index = 0, videoData = []) => {
+      let idSection = ids.slice(index, index + 40)
+      let url = `https://www.googleapis.com/youtube/v3/videos?id=${idSection}&key=${
+        process.env.YOUTUBE_KEY
+      }&maxResults=5&part=snippet,contentDetails,statistics`
+      const result = await axios.get(url)
+      let currentVideoData = [...videoData, ...result.data.items]
+
+      if (ids.length > index + 40) {
+        index += 40
+        return await fetchVideos(ids, index, currentVideoData)
+      }
+      return currentVideoData
+    }
+
+    const videoData = await fetchVideos(ids)
+    console.log(videoData.length)
+    return videoData
+
+    // let url = `https://www.googleapis.com/youtube/v3/videos?id=${ids}&key=AIzaSyBQ6ra4mODnP97LHnOgfn6VJSSI74qf5RQ&maxResults=5&part=snippet,contentDetails,statistics`
+    // const result = await axios.get(url)
+    // return reuslt.data.items
   }
 
   //Get meetup data stored in meetup.com
   const getMeetupEvents = async _ => {
     const result = await axios.get(
-      'https://api.meetup.com/self/events?key=223151318612e4556a60227a3c125d&order=time'
+      `https://api.meetup.com/self/events?key=${
+        process.env.MEETUP_KEY
+      }&order=time`
     )
     const contentfulMeetups = result.data.filter(event =>
       event.group.name.includes('Contentful')
@@ -73,8 +95,9 @@ exports.sourceNodes = async ({
 
   //Get meetup group data stored in meetup pro
   const getMeetupGroups = async _ => {
-    let url =
-      'https://api.meetup.com/pro/contentful-developers-meetups/groups?key=223151318612e4556a60227a3c125d'
+    let url = `https://api.meetup.com/pro/contentful-developers-meetups/groups?key=${
+      process.env.MEETUP_KEY
+    }`
     const result = await axios.get(url)
 
     return result
@@ -106,12 +129,11 @@ exports.sourceNodes = async ({
     const result = await axios.get(url)
     const link = result.headers.link
     const linkInformation = getUsableNextLink({ link: link })
-    const key = '223151318612e4556a60227a3c125d'
     const members = [...currentList, ...result.data]
 
     if (linkInformation[1] != 'prev') {
       return await getMeetupMembers({
-        url: `${linkInformation[0]}&key=${key}`,
+        url: `${linkInformation[0]}&key=${process.env.MEETUP_KEY}`,
         currentList: members,
       })
     }
@@ -138,8 +160,9 @@ exports.sourceNodes = async ({
       getMeetupEvents(),
       getMeetupGroups(),
       getMeetupMembers({
-        url:
-          'https://api.meetup.com/pro/contentful-developers-meetups/members?key=223151318612e4556a60227a3c125d',
+        url: `https://api.meetup.com/pro/contentful-developers-meetups/members?key=${
+          process.env.MEETUP_KEY
+        }`,
       }),
     ])
 
@@ -151,11 +174,11 @@ exports.sourceNodes = async ({
         host: event.fields.location,
         date: event.fields.startTime,
         updated: event.sys.updatedAt,
+        speakers: event.fields.speakers,
         planningNotes: event.fields.planningNotes,
         associatedVideos: event.fields.videoUrls
           ? event.fields.videoUrls.map(videoUrl => {
               return youtubeVideos.find(video => {
-                let url = videoUrl
                 return video.id === videoUrl
               })
             })
