@@ -71,12 +71,8 @@ exports.sourceNodes = async ({
     }
 
     const videoData = await fetchVideos(ids)
-    console.log(videoData.length)
-    return videoData
 
-    // let url = `https://www.googleapis.com/youtube/v3/videos?id=${ids}&key=AIzaSyBQ6ra4mODnP97LHnOgfn6VJSSI74qf5RQ&maxResults=5&part=snippet,contentDetails,statistics`
-    // const result = await axios.get(url)
-    // return reuslt.data.items
+    return videoData
   }
 
   //Get meetup data stored in meetup.com
